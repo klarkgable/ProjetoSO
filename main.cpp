@@ -9,7 +9,7 @@
 using namespace std;
 
 Server server;
-JobExecution JobExecution;
+//JobExecution JobExecution;
 
 int main(int argc, char** argv) {
 
