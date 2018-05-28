@@ -1,5 +1,5 @@
 # ProjetoSO
-Projeto para disciplina de sistemas operacionais unb 1/2018
+Projeto para disciplina de sistemas operacionais unb 1°/2018
 
 
 Professora: Alba Cristina
