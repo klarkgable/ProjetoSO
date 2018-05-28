@@ -1,7 +1,9 @@
 # ProjetoSO
 Projeto disponível em: https://github.com/klarkgable/ProjetoSO
 
-Projeto para disciplina de sistemas operacionais unb 1°/2018
+Departamento de Ciência da Computação - Universidade de Brasíla 
+
+Projeto para disciplina de sistemas operacionais 1°/2018
 
 Título: Gerente de escalonamento postergado de processos CPU/bound 
 
