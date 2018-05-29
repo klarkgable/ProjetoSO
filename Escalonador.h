@@ -5,33 +5,36 @@
 #include <ctime>
 #include <sys/types.h>
 //#include <sys/ipc.h>
+#include <sys/param.h>
 //#include <sys/msg.h>
 //#include <sys/shm.h>
 #include <list>
 #include <vector>
 #include "Estrutura.h"
+#include "Executor.h"
 
 
 
-/// Variaveis de erro
-#define SUCCESS 0 /// Variavel Global de successo
-#define ERROR_ARGS -1 /// Variavel Global de erro de argumento
-#define ERROR_FUNC -2 /// Variavel Global de erro de funcionalidade
-#define ERROR_SHM 1 /// Variavel de erro de memoria compartilhada
-#define ERROR_MSQ 2 /// Variavel de erro de menssagem
 
-/// IPC macros
-#define SHM_FLAGS 0644 /// Flag da memoria compartilhada
-#define SHM_KEY 0x111141 /// Chave da memoria compartilhada
-#define MSQ_FLAGS 0644 /// Flag da fila de menssagem
-#define MSQ_KEY 0x159560 /// Chave da fila de menssagem
+/// Erros
+#define SUCCESS 0
+#define ERROR_ARGS -1
+#define ERROR_FUNC -2
+#define ERROR_SHM 1
+#define ERROR_MSQ 2
+
+/// IPCs
+#define SHM_FLAGS 0644
+#define SHM_KEY 0x111141
+#define MSQ_FLAGS 0644
+#define MSQ_KEY 0x159560
 #define MSG_TYPE 1
 
-/// Menssagens
-#define MSG_CANCEL "Cancel" /// Messagem para cancelar o processe
-#define MSG_REQLIST "List" /// Messagem para solicitar lista de processos
+/// Mensagens
+#define MSG_CANCEL "Cancel"
+#define MSG_REQLIST "List"
 
-///Quantum do Escalonador
+///Schedule Macros
 #define QUANTUM = 5;
 
 
@@ -39,148 +42,105 @@
 #ifndef ESCALONADOR_H_INCLUDED
 #define ESCALONADOR_H_INCLUDED
 
-class JobExecution {
+class ExecucaoProcesso {
 
     private:
 
         pid_t _pid = -1;
-        time_t receivedTime;
-        double timeToNextExecution;
+        time_t recebeTempo;
+        double tempoProximaExecucao;
 
 
     public:
-        int remaingTimes = _job._times;
-        job _job;
-        void setReceivedTime();
-        time_t getReceivedTime();
-        void setJob(job rcvJob);
-        Job getJob();
-        int getJobID();
+        int copiasRestantes = _processo._copias;
+
+        processo _processo;
+
+        void setRecebeTempo();
+
+        time_t getRecebeTempo();
+
+        void setProcesso(processo rcvProcesso);
+
+        Processo getProcesso();
+
+        int getProcessoID();
+
         void setPID(pid_t pid);
+
         pid_t getPID();
-        JobExecution();
-        void resetTimeToNextExecution();
-        void decreaseTimeToNextExecution(double dTime);
-        double getTimeToNextExecution();
-    bool operator==(const JobExecution &other) const;
+
+        ExecucaoProcesso();
+
+        void resetTempoProximaExecucao();
+
+        void decreaseTempoProximaExecucao(double dTempo);
+
+        double getTempoProximaExecucao();
+
+        bool operator==(const ExecucaoProcesso &other) const;
 };
 
-/*typedef struct job {
-    int _jobId = -1; /// Unique
-    std::string _programName; /// Path
-    int _hour;
-    int _minute;
-    int _times;
-} Job;
-typedef struct jobmsg {
-	long _mtype;
-	char _job[100];
-} JobMessage;
+
+
 /**
 * Classe do escalonador
 */
-class Server {
+class Escalonador {
 	private:
             int _shmId;
             int _shmId2;
-            int *_listLenght;
-            int *_jobId;
+            int *_tamanhoLista;
+            int *_processoId;
             int _msqId;
             int _msqId2;
 
 	public:
-            std::list<JobExecution> _newJobs; //Recebe os processo
-            std::list<JobExecution> _jobsInExecution;
-            JobExecution _jobInExecution;
+            std::list<ExecucaoProcesso> _novosProcessos; ///Recebe processos
+            std::list<ExecucaoProcesso> _processosEmExecucao;
+            ExecucaoProcesso _processoEmExecucao;
 
-            /**
-            * Construtor padrao.
-            */
-            Server();
+           ///construtor
+            Escalonador();
 
-            /**
-            * Destruidor padrao.
-            */
-    		~Server();
+    		~Escalonador();
 
-    		/**
-            * @brief Main method.
-            */
+
     		void main(int argc, char** argv);
 
-     		/**
-            *   @brief Creates the environment for executing a scheduling operation. Convers user input to something
-            *          the program can understand.
-            *   @param argv Command line used to call the program.
-            */
     		void setup(char** argv);
 
-            /**
-            *   @brief Shuts the program down. You might want to do this on the destructor, I don't know.
-            */
             void shutdown();
 
-            /**
-            *   @brief Receive message sent by scheduler. Wait until the message is available.
-            */
-            void rcvMessage();
+            ///recebe mensagem do modulo Executor
+            void rcvMensagem();
 
-            /**
-            *   @brief Split string into subtrings.
-            *   @param input String that will be broken
-            *   @param delimiter delimiter of each substring
-            *   @return returns a vector with substrings
-            */
+           ///divide string em substrings
             std::vector<std::string> splitString(std::string input, std::string delimiter);
 
-            /**
-            *   @brief Parse a message vector in Job.
-            *   @param message Vector that contains job values.
-            *   @return Returns a Job struct.
-            */
-            job parseVectorToJob(std::vector<std::string> message);
+            ///analisa vetor de mensagem de processo e retorna uma struct do processo
+            processo analisaVetorProcesso(std::vector<std::string> mensagem);
 
-            /**
-            *   @brief Continue a execution of a Job with JobPID
-            *   @param jobPID Pid of the job to continue execution
-            */
-            void execute_job(pid_t jobPID);
+            ///continua execuçao de processo com pid dele
+            void executa_processo(pid_t processoPID);
 
-            /**
-            *   @brief Pause a execution of a Job with JobPID
-            *   @param jobPID Pid of the job to pause execution
-            */
-            void pause_job(pid_t jobPID);
+            ///pausa execucao de processo com pid
+            void pausa_processo(pid_t processoPID);
 
-            /**
-            *   @brief Kill a execution of a Job with JobPID
-            *   @param jobPID Pid of the job to pause kill
-            */
-            void kill_job(pid_t jobPID);
+            ///mata execucao de proceeso pid
+            void kill_processo(pid_t processoPID);
 
-            /**
-            *   @brief RoundRobin Scheduler. Responsible for control when and which process execute or pause.
-            */
+           ///ira fazer o controle de processos por escalonamento round robin
             void round_robin();
 
-            /**
-            *   @brief Fork Server Process and Execute image of new process.
-            *   @param job  Job that contains informations about new process.
-            *   @return Returns the PID of created process
-            */
-            pid_t start_job(JobExecution job);
+            ///inicia novo processo e retorna pid dele
+            pid_t inicia_processo(ExecucaoProcesso processo);
 
-            /**
-            *   @brief Verifies if a process that will execute, is alive or dead.
-            *   @return Returns TRUE if process still alive of False if process is Dead.
-            */
-            bool refreshJobs();
+           ///verifica se o processo que vai se executar está ativo ou morto e retorna true ou false
+            bool verificaProcessos();
 
-            /**
-            *   @brief Update time for execution of Jobs in list.
-            *   @param spentTime Time Spent since last update.
-            */
-            void updateNewJobsTime(double spentTime);
+            ///atualiza tempo para execucao dos processos
+            void atualizaTempoNovosProcessos(double tempoGasto);
 };
 
 #endif // ESCALONADOR_H_INCLUDED
