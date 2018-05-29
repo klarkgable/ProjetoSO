@@ -1,202 +1,211 @@
-#include "../header/scheduler.h"
+#include "Executor.h"
 
-Scheduler::Scheduler() {
+
+Executor::Executor() {
 
 }
 
-Scheduler::~Scheduler() {
+Executor::~Executor() {
 
 }
 
 int main(int argc, char** argv) {
-	Scheduler scheduler;
+	Executor executor;
 
 	switch(argc) {
-		case 1: // Totally flawless workaround solution --Needs refactoring
+		case 1:
 		case 2:
 		case 4:
-			scheduler.setup(argv);
+			executor.setup(argv);
 			break;
 		default:
-			std::cout << "Incompatible number of arguments. Check program call." << std::endl;
+			std::cout << "Numero de argumentos incompatível, conferir chamada do programa" << std::endl;
 			return ERROR_ARGS;
 	}
 
-	scheduler.shutdown();
+	executor.shutdown();
 	return SUCCESS;
 }
 
-void Scheduler::setup(char** argv) {
-	std::string functionality = argv[0];
 
-	// Shared Memory - Job ID
-	if((this->_shmId = shmget(SHM_KEY, 0, 0)) == -1) { // Creation
-		std::cout << "Error: shmget failed." << std::endl;
+///funcionamento dos metodos declarados em Executor.h
+void Executor::setup(char** argv) {
+	std::string funcionalidade = argv[0];
+
+
+	if((this->_shmId = shmget(SHM_KEY, 0, 0)) == -1) { ///criação
+		std::cout << "Erro: shmget falhou." << std::endl;
 		exit(1);
 	}
-	(this->_jobId = (int *) shmat(this->_shmId, NULL, 0));
+	(this->_processoId = (int *) shmat(this->_shmId, NULL, 0));
 
-	if(errno  == -1) { // Attachment
-		std::cout << "Error: shmat failed." << std::endl;
-		exit(1);
-	}
-
-	// Shared Memory - List Length
-	if((this->_shmId2 = shmget(SHM_KEY2, 0, 0)) == -1) { // Creation
-		std::cout << "Error: shmget failed." << std::endl;
+	if(errno  == -1) {
+		std::cout << "Erro: shmat falhou." << std::endl;
 		exit(1);
 	}
 
-	(this->_listLength = (int *) shmat(this->_shmId2, NULL, 0));
-
-	if(errno  == -1) { // Attachment
-		std::cout << "Error: shmat failed." << std::endl;
+	///Tamanho da Lista
+	if((this->_shmId2 = shmget(SHM_KEY2, 0, 0)) == -1) { /// Criaçao
+		std::cout << "Erro: shmget falhou." << std::endl;
 		exit(1);
 	}
 
-	// Message Queues
+	(this->_tamanhoLista = (int *) shmat(this->_shmId2, NULL, 0));
+
+	if(errno  == -1) {
+		std::cout << "Erro: shmat falhou." << std::endl;
+		exit(1);
+	}
+
+	/// Filas de mensagens
 	if((this->_msqId = msgget(MSQ_KEY, MSQ_FLAGS)) == -1) {
-		std::cout << "Error: msgget failed." << std::endl;
+		std::cout << "Erro: msgget falhou." << std::endl;
 		exit(2);
 	}
 
 	if((this->_msqId2 = msgget(MSQ_KEY2, MSQ_FLAGS)) == -1) {
-		std::cout << "Error: msgget failed." << std::endl;
+		std::cout << "Erro: msgget falhou." << std::endl;
 		exit(2);
 	}
 
-	// Figuring out what to do
-	std::string functionalityPpExec = functionality.substr(functionality.length() - strlen("executa_postergado"));
-	std::string functionalityPpRemv = functionality.substr(functionality.length() - strlen("remove_postergado"));
-	std::string functionalityListJb = functionality.substr(functionality.length() - strlen("lista_postergados"));
-	std::string functionalityServerShutdown = functionality.substr(functionality.length() - strlen("shutdown_postergado"));
+	/// descobrir qual operação iremos fazer
+	std::string funcionalidadeExecucao = funcionalidade.substr(funcionalidade.tamanho() - strlen("solicita_execucao"));
+	std::string funcionalidadeRemover = funcionalidade.substr(functionalidade.tamanho() - strlen("remove_postergado"));
+	std::string funcionalidadeListaProcesso = funcionalidade.substr(funcionalidade.tamanho() - strlen("lista_postergados"));
+	std::string funcionalidadeShutdown = funcionalidade.substr(funcionalidade.tamanho() - strlen("Shutdown_postergado"));
 
-	if(!functionalityPpExec.compare("executa_postergado")) {
-		short hours, minutes;
-		// Parsing time string to integers
-		this->parseTime(argv[1], &hours, &minutes);
-		// Scheduling the process
-		this->schedule(hours, minutes, atoi(argv[2]), argv[3]);
+	if(!funcionalidadeExecucao.compare("executa_postergado")) {
+		short horas, minutos;
+		int pri;
+
+		this->analisaTempo(argv[1], &horas, &minutos);
+
+		this->executor(horas, minutos, atoi(argv[2]), argv[3],pri);
 	}
-	else if(!functionalityPpRemv.compare("remove_postergado")) {
-		this->unschedule(atoi(argv[1]));
+	else if(!funcionalidadeRemover.compare("remove_postergado")) {
+		this->naoExecuta(atoi(argv[1]));
 	}
-	else if(!functionalityListJb.compare("lista_postergados")) {
-		this->listJobs();
+	else if(!funcionalidadeListaProcesso.compare("lista_postergados")) {
+		this->listaProcessos();
 	}
-	else if(!functionalityServerShutdown.compare("shutdown_postergado")) {
-		this->shutdownServer();
+	else if(!funcionalidadeShutdown.compare("shutdown_postergado")) {
+		this->shutdownEscalonador();
 	}
 	else {
-		std::cout << "Unknown functionality: " << argv[0] << std::endl;
+		std::cout << "Funcionalidade desconhecida: " << argv[0] << std::endl;
 		exit(ERROR_FUNC);
 	}
 }
 
-void Scheduler::schedule(short hours = 0, short minutes = 0, int times = 1, std::string path = "") {
-    JobMessage currentJob;
+///funcionalidade de solicitar execucao
+void Executor::executor(short horas = 0, short minutos = 0, int copias = 1, std::string path = "", int pri) {
+    MsgProcesso processoCorrente;
 
-    this->_jobId[0]++;
+    this->_processoId[0]++;
 
-	std::string message = std::to_string(this->_jobId[0]) + "|" +
-						  std::to_string(hours) + "|" +
-						  std::to_string(minutes) + "|" +
-						  std::to_string(times) + "|" + path;
+	std::string mensagem = std::to_string(this->_processoId[0]) + "|" +
+						  std::to_string(horas) + "|" +
+						  std::to_string(minutos) + "|" +
+						  std::to_string(copias) + "|" + path + pri;
 
-    currentJob._mtype = 1;
-	strcpy(currentJob._job , message.c_str());
-    this->sendMessage(currentJob);
+    processoCorrente._mtipo = 1;
+	strcpy(processoCorrente._processo , mensagem.c_str());
+    this->enviaMensagem(processoCorrente);
 
-    std::cout << "New job created." << std::endl;
-    std::cout << "Id\t" << "Delay\t" << "Times\t" << "Program" << std::endl;
-    std::cout << this->_jobId[0] + 1 << "\t" << hours << ":" << minutes << "\t"<< times << "\t" << path << std::endl;
+    std::cout << "Novo processo criado." << std::endl;
+    std::cout << "Id\t" << "Delay\t" << "Copias\t" << "Programa\t" << "Prioridade\t" << std::endl;
+    std::cout << this->_processoId[0] + 1 << "\t" << horas << ":" << minutos << "\t"<< copias << "\t" << path << "\t" << pri << std::endl;
 }
 
-void Scheduler::unschedule(int id) {
-	JobMessage controlMessage;
+///funcionalidade de remover execucao
+void Executor::naoExecuta(int id) {
+	MsgProcesso controlaMensagem;
 
-	controlMessage._mtype = 1;
+	controlaMensagem._mtipo = 1;
 
-	std::string message = std::to_string(id) + "|" +
+	std::string mensagem = std::to_string(id) + "|" +
 						  MSG_CANCEL;
-	strcpy(controlMessage._job, message.c_str());
+	strcpy(controlaMensagem._processo, mensagem.c_str());
 
-	this->sendMessage(controlMessage);
+	this->enviaMensagem(controlaMensagem);
 }
 
-void Scheduler::listJobs() {
-	JobMessage controlMessage;
+///funcionalidade de listar processos
+void Executor::listaProcesso() {
+	MsgProcesso controlaMensagem;
 
-	controlMessage._mtype = 1;
+	controlaMensagem._mtipo = 1;
 
-	std::string message = std::to_string(0) + "|" +
+	std::string mensagem = std::to_string(0) + "|" +
 						  MSG_LIST;
 
-	strcpy(controlMessage._job, message.c_str());
+	strcpy(controlaMensagem._processo, mensagem.c_str());
 
-	this->sendMessage(controlMessage);
+	this->enviaMensagem(controlaMensagem);
 
-	if(this->_listLength[0] > 0) {
-		int i = this->_listLength[0];
-		std::cout << "Id\t" << "Delay\t" << "Times\t" << "Program" << std::endl;
+	if(this->_tamanhoLista[0] > 0) {
+		int i = this->_tamanhoLista[0];
+		std::cout << "Id\t" << "Delay\t" << "Copias\t" << "Program" << "Prioridade" << std::endl;
 		while(i > 1) {
-			// Receive message
-			size_t msgsize;
-			JobMessage node;
-			msgrcv(this->_msqId2, &node, msgsize, MSG_TYPE, 0);
-			std::vector<std::string> tupleVector = this->splitString(node._job, "|");
-			std::cout << tupleVector.operator[](0).c_str() << "\t" << tupleVector.operator[](1).c_str()
-						<< ":" << tupleVector.operator[](2).c_str() << "\t" << tupleVector.operator[](3).c_str()
-						<< "\t" << tupleVector.operator[](4).c_str() << std::endl;
+			/// Recebe mensagem
+			size_t msgtamanho;
+			MsgProcesso no;
+			msgrcv(this->_msqId2, &no, msgtamanho, MSG_TYPE, 0);
+			std::vector<std::string> vetorTupla = this->splitString(no._processo, "|");
+			std::cout << vetorTupla.operator[](0).c_str() << "\t" << vetorTupla.operator[](1).c_str()
+						<< ":" << vetorTupla.operator[](2).c_str() << "\t" << vetorTupla.operator[](3).c_str()
+						<< "\t" << vetorTupla.operator[](4).c_str() << std::endl;
 			i--;
 		}
 	}
 	else {
-		std::cout << "No jobs scheduled." << std::endl;
+		std::cout << "Não há processos em execucao." << std::endl;
 	}
 }
 
-void Scheduler::shutdownServer() {
-	JobMessage controlMessage;
+void Executor::shutdownEscalonador() {
+	MsgProcesso controlaMensagem;
 
-	controlMessage._mtype = 1;
+	controlaMenssagem._mtipo = 1;
 
-	std::string message = std::to_string(0) + "|" +
+	std::string mensagem = std::to_string(0) + "|" +
 						  MSG_SHUTDOWN;
 
-	strcpy(controlMessage._job, message.c_str());
+	strcpy(controlaMensagem._processo, mensagem.c_str());
 
-	this->sendMessage(controlMessage);
+	this->enviaMensagem(controlaMensagem);
 }
 
-void Scheduler::shutdown() {
-	if(shmdt(this->_jobId) == -1) {
-		std::cout << "Error: shmdt failed." << std::endl;
+void Executor::shutdown() {
+	if(shmdt(this->_processoId) == -1) {
+		std::cout << "Erro: shmdt falhou." << std::endl;
 		exit(1);
 	}
-	if(shmdt(this->_listLength) == -1) {
-		std::cout << "Error: shmdt failed." << std::endl;
+	if(shmdt(this->_tamanhoLista) == -1) {
+		std::cout << "Erro: shmdt falhou." << std::endl;
 		exit(1);
 	}
 }
 
-void Scheduler::parseTime(char *timeString, short *hours, short *minutes) {
-	char *parser;
-	parser = strtok(timeString, ":");
-	*hours = atoi(parser); // Parses hours.
-	parser = strtok(NULL, ":");
-	*minutes = atoi(parser); // Parses minutes.
-	// What ever comes after is ignored.
+void Executor::analisaTempo(char *stringTempo, short *horas, short *minutos) {
+	char *analisador;
+
+	analisador = strtok(stringTempo, ":");
+	*horas = atoi(analisador);
+	analisador = strtok(NULL, ":");
+	*minutos = atoi(analisador);
+	///ignora o que vem depois
 }
 
-void Scheduler::sendMessage(JobMessage message) {
-	if(msgsnd(this->_msqId, &message, sizeof(JobMessage), MSQ_FLAGS | IPC_NOWAIT) == -1) {
-		std::cout << "Error: msgsnd failed." << std::endl;
+void Executor::enviaMensagem(MsGProcesso mensagem) {
+
+	if(msgsnd(this->_msqId, &mensagem, sizeof(MsgProcesso), MSQ_FLAGS | IPC_NOWAIT) == -1) {
+		std::cout << "Erro: msgsnd falhou." << std::endl;
 		exit(2);
 	}
 }
 
-std::vector<std::string> Scheduler::splitString(std::string input, std::string delimiter) {
+std::vector<std::string> Executor::splitString(std::string input, std::string delimiter) {
     std::vector<std::string> output;
     char *pch;
     char *str = strdup(input.c_str());
