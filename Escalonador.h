@@ -13,26 +13,26 @@
 
 
 
-// Error macros
-#define SUCCESS 0 /// Global Success
-#define ERROR_ARGS -1 /// Global Argument Error
-#define ERROR_FUNC -2 /// Global Functionality Error
-#define ERROR_SHM 1 /// Shared Memory Error
-#define ERROR_MSQ 2 /// Message Queue Error
+/// Variaveis de erro
+#define SUCCESS 0 /// Variavel Global de successo
+#define ERROR_ARGS -1 /// Variavel Global de erro de argumento
+#define ERROR_FUNC -2 /// Variavel Global de erro de funcionalidade
+#define ERROR_SHM 1 /// Variavel de erro de memoria compartilhada
+#define ERROR_MSQ 2 /// Variavel de erro de menssagem
 
 /// IPC macros
-#define SHM_FLAGS 0644 /// Shared Memory Flag
-#define SHM_KEY 0x111141 /// Shared Memory Key
-#define MSQ_FLAGS 0644 /// Message Queue Flag
-#define MSQ_KEY 0x159560 /// Message Queue Key
+#define SHM_FLAGS 0644 /// Flag da memoria compartilhada
+#define SHM_KEY 0x111141 /// Chave da memoria compartilhada
+#define MSQ_FLAGS 0644 /// Flag da fila de menssagem
+#define MSQ_KEY 0x159560 /// Chave da fila de menssagem
 #define MSG_TYPE 1
 
-/// Messages
-#define MSG_CANCEL "Cancel" /// Message to cancel a job
-#define MSG_REQLIST "List" /// Message to request the jobs list
+/// Menssagens
+#define MSG_CANCEL "Cancel" /// Messagem para cancelar o processe
+#define MSG_REQLIST "List" /// Messagem para solicitar lista de processos
 
-///Schedule Macros
-#define QUANTUM = 10;
+///Quantum do Escalonador
+#define QUANTUM = 5;
 
 
 
@@ -72,14 +72,10 @@ class JobExecution {
     int _minute;
     int _times;
 } Job;
-
 typedef struct jobmsg {
 	long _mtype;
 	char _job[100];
 } JobMessage;
-
-
-
 /**
 * Classe do escalonador
 */
@@ -93,17 +89,17 @@ class Server {
             int _msqId2;
 
 	public:
-            std::list<JobExecution> _newJobs; //Received Jobs
+            std::list<JobExecution> _newJobs; //Recebe os processo
             std::list<JobExecution> _jobsInExecution;
             JobExecution _jobInExecution;
 
             /**
-            * @brief Default constructor. Does nothing special.
+            * Construtor padrao.
             */
             Server();
 
             /**
-            * @brief Default destructor. Does nothing special.
+            * Destruidor padrao.
             */
     		~Server();
 
