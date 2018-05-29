@@ -65,79 +65,78 @@ Server::~Server() {
 }
 
 void Server::setup(char** argv) {
-	// Shared Memory Segment
-	if((this->_shmId = shmget(SHM_KEY, sizeof(int), SHM_FLAGS | IPC_CREAT)) == -1) { // Creation
-		std::cout << "Error: shmget failed." << std::endl;
+	// Memoria compartilhada
+	if((this->_shmId = shmget(SHM_KEY, sizeof(int), SHM_FLAGS | IPC_CREAT)) == -1) { // Cria
+		std::cout << "Erro: Falha no shmget." << std::endl;
 		exit(1);
 	}
 
 	this->_jobId = (int *) shmat(this->_shmId, NULL, 0);
 	if(errno  == -1) { // Attachment
-		std::cout << "Error: shmat failed." << std::endl;
+		std::cout << "Erro: Falha no shmat." << std::endl;
 		exit(1);
 	}
-	this->_jobId[0] = 0; /// Array format, use pointers if you will
+	this->_jobId[0] = 0; /// Formato Array
 
-    //Sharedd memory for job's list size
-    if((this->_shmId2 = shmget(SHM_KEY2, sizeof(int), SHM_FLAGS | IPC_CREAT)) == -1) { // Creation
-        std::cout << "Error: shmget failed." << std::endl;
+    //Memoria compartilhada para o tamanho 
+    if((this->_shmId2 = shmget(SHM_KEY2, sizeof(int), SHM_FLAGS | IPC_CREAT)) == -1) { // Cria
+        std::cout << "Erro:  Falha no shmget." << std::endl;
         exit(1);
     }
 
     this->_listLenght = (int *) shmat(this->_shmId2, NULL, 0);
     if(errno  == -1) { // Attachment
-        std::cout << "Error: shmat failed." << std::endl;
+        std::cout << "Erro: Falha no shmat." << std::endl;
         exit(1);
     }
-    this->_listLenght[0] = 0; /// Array format, use pointers if you will
+    this->_listLenght[0] = 0; /// Formato Array
 
-	// Message Queue
-	if((this->_msqId = msgget(MSQ_KEY, MSQ_FLAGS | IPC_CREAT)) == -1) { // Creates the message queue
-		std::cout << "Error: msgget failed." << std::endl;
+	// Fila de Mensagens
+	if((this->_msqId = msgget(MSQ_KEY, MSQ_FLAGS | IPC_CREAT)) == -1) { // Cria a fila de mensagens
+		std::cout << "Erro: Falha no msgget." << std::endl;
 		exit(2);
 	}
 
-    //Message Queue to send the list of jobs to impression.
-    // Message Queue
-    if((this->_msqId2 = msgget(MSQ_KEY2, MSQ_FLAGS | IPC_CREAT)) == -1) { // Creates the message queue
-        std::cout << "Error: msgget failed." << std::endl;
+    //Fila de mensagem para impressao
+    // Fila de mensagem
+    if((this->_msqId2 = msgget(MSQ_KEY2, MSQ_FLAGS | IPC_CREAT)) == -1) { // Cria a fila de menssagem
+        std::cout << "Erro: Falha no msgget." << std::endl;
         exit(2);
     }
-	// No further steps needed.
 }
 
 void Server::shutdown() {
-	std::cout << "Shutting down." << std::endl;
+	std::cout << "Encerrando Executor - Shutting down." << std::endl;
 
-	// Shared Memory Segment
+	// Segmento de memoria compartilhada
 	if(shmdt(this->_jobId) == -1) { // Detach
-		std::cout << "Error: shmdt failed." << std::endl;
+		std::cout << "Erro: Falha no shmdt." << std::endl;
 		exit(1);
 	}
 	if(shmctl(this->_shmId, IPC_RMID, NULL) == -1) { // Remove
-		std::cout << "Error: shmctl failed." << std::endl;
+		std::cout << "Erro: Falha no shmctl." << std::endl;
 		exit(1);
 	}
 
-	// Message Queue
+	// Fila de menssagem
 	if(msgctl(this->_msqId, IPC_RMID, NULL) == -1) {
-		std::cout << "Error: msgctl failed." << std::endl;
+		std::cout << "Erro: Falha no msgctl." << std::endl;
 		exit(2);
 	}
 
-    // Shared Memory Segment
+    // Segmento de memoria compartilhada
     if(shmdt(this->_listLenght) == -1) { // Detach
-        std::cout << "Error: shmdt failed." << std::endl;
+        std::cout << "Erro: Falha no shmdt." << std::endl;
         exit(1);
     }
     if(shmctl(this->_shmId2, IPC_RMID, NULL) == -1) { // Remove
-        std::cout << "Error: shmctl failed." << std::endl;
+        std::cout << "Erro: Falha no shmctl." << std::endl;
         exit(1);
     }
 
-    // Message Queue
+    // Fila de menssagem
     if(msgctl(this->_msqId2, IPC_RMID, NULL) == -1) {
-        std::cout << "Error: msgctl failed." << std::endl;
+        std::cout << "Erro: Falha no msgctl." << std::endl;
         exit(2);
     }
 
@@ -165,7 +164,7 @@ void Server::rcvMessage() {
             rcvJob.remaingTimes = rcvJob.getJob()._times;
             this->_jobId[0] = (rcvJob.getJobID())+1;
             _newJobs.insert(_newJobs.end(), rcvJob);
-            std::cout << "Received Job:" + var << endl;
+            std::cout << "Processo recebido:" + var << endl;
             rcvJob.setReceivedTime();
         }else if(jobvalues.operator[](1) == MSG_CANCEL) {
             job iteratorJob;
@@ -173,7 +172,7 @@ void Server::rcvMessage() {
             iteratorJob._jobId = std::stoi(jobvalues.operator[](0), nullptr, 10);
             job.setJob(iteratorJob);
             _newJobs.remove(job);
-            std::cout << "Removed Job with id: "+std::to_string(job.getJobID())<<endl;
+            std::cout << "Processo removido com ID: "+std::to_string(job.getJobID())<<endl;
         }else if(jobvalues.operator[](1) == MSG_SHUTDOWN){
             this->shutdown();
             exit(0);
@@ -188,7 +187,7 @@ void Server::rcvMessage() {
                 msg._mtype = 1;
                 strcpy(msg._job,messsageToSend.c_str());
                 if(msgsnd(_msqId2,&msg,sizeof(JobMessage),MSQ_FLAGS|IPC_NOWAIT) == -1){
-                    std::cout << "Error: msgsnd error"<<endl;
+                    std::cout << "Erro: Erro no msgsnd."<<endl;
                     return;
                 }
                 std::next(it,1);
@@ -213,17 +212,17 @@ void Server::kill_job(pid_t jobPID){
 void Server::round_robin() {
 
     std::list<JobExecution>::iterator it = _jobsInExecution.begin();
-    cout <<"Scheduler Started for Job with ID: "+std::to_string(it->getJobID())<<std::endl;
+    cout <<"Agendador iniciado para o trabalho ID "+std::to_string(it->getJobID())<<std::endl;
     _jobInExecution = (*it);
     if(this->refreshJobs() == false){
         _jobsInExecution.remove((*it));
-        std::cout << "Process with PID: "+std::to_string(_jobInExecution.getPID())+" Ended execution."<<endl;
-        std::cout << "Remaining Jobs to Execution: "+std::to_string(_jobsInExecution.size())<<endl;
+        std::cout << "Processo com PID: "+std::to_string(_jobInExecution.getPID())+" Terminando a execucao"<<endl;
+        std::cout << "Processos esperando a execucao: "+std::to_string(_jobsInExecution.size())<<endl;
         _jobInExecution.remaingTimes -= 1;
         if(_jobInExecution.remaingTimes > 0){
-            std::cout << "Process with PID: "+std::to_string(_jobInExecution.getPID())+" Go Back to Wait List" << endl;
-            std::cout << "Process with PID: "+std::to_string(_jobInExecution.getPID())+
-                                 " Times Remaining: "+
+            std::cout << "Processo com PID: "+std::to_string(_jobInExecution.getPID())+" Volta a lista de espera" << endl;
+            std::cout << "Processo com PID: "+std::to_string(_jobInExecution.getPID())+
+                                 " Tempo restante: "+
                                  std::to_string(_jobInExecution.remaingTimes) << endl;
         }
         return;
@@ -235,26 +234,26 @@ void Server::round_robin() {
         execute_job(_jobInExecution.getPID());
     }
 
-    cout<<"Started Execution of Process with PID: "+std::to_string(_jobInExecution.getPID())<<endl;
+    cout<<"Comecou a execucao do processo com o PID: "+std::to_string(_jobInExecution.getPID())<<endl;
 
     sleep(10);
 
     this->pause_job(_jobInExecution.getPID());
     _jobsInExecution.pop_front();
     _jobsInExecution.push_back(_jobInExecution);
-    cout<<"Pause Execution of Process with PID:"+std::to_string(_jobInExecution.getPID())<<endl;
+    cout<<"Pausa da execucao do processo com o PID:"+std::to_string(_jobInExecution.getPID())<<endl;
 }
 
 pid_t Server::start_job(JobExecution job) {
     pid_t pid = fork();
     if(pid==0){
         int status = execl(job.getJob()._programName.c_str(),job.getJob()._programName.c_str(),NULL);
-        std::cout <<"URLPATH: "+ job.getJob()._programName<<endl;
-        std::cout <<"Process Flag: "+ std::to_string(status)<<endl;
-        std::cout <<"ERRNO Flag: "+ std::to_string(errno)<<endl;
+        std::cout <<"Endereco: "+ job.getJob()._programName<<endl;
+        std::cout <<"Flag do Processo: "+ std::to_string(status)<<endl;
+        std::cout <<"Flag do ERRNO: "+ std::to_string(errno)<<endl;
 
         if(status == -1){
-            cout << "Error in process creation" <<endl;
+            cout << "Erro na criacao do Processo" <<endl;
             exit(-2);
         }
     }
@@ -272,7 +271,7 @@ bool Server::refreshJobs(){
     } else if (result == -1) {
         return -1;
     } else {
-        cout<<"Process with PID:"+std::to_string(result)+"is DEAD"<<endl;
+        cout<<"Processo com PID:"+std::to_string(result)+"esta morto"<<endl;
         return false;
     }
 }
@@ -309,7 +308,7 @@ void Server::updateNewJobsTime(double spentTime){
         while (iteratorsize >0) {
             it->decreaseTimeToNextExecution(spentTime);
             if (it->getTimeToNextExecution() <= 0) {
-                std::cout << "Process with ID: " + std::to_string(it->getJob()._jobId) + " Go to execution" <<
+                std::cout << "Processo com PID: " + std::to_string(it->getJob()._jobId) + " Entra em execucao" <<
                 std::endl;
                 JobExecution job = (*it);
                 this->_newJobs.remove((*it));
