@@ -3,37 +3,42 @@
 #include <signal.h>
 #include "Escalonador.h"
 #include "Estrutura.h"
-
+#include "Executor.h"
 
 
 using namespace std;
 
-Server server;
-//JobExecution JobExecution;
+Escalonador escalonador;
+
 
 int main(int argc, char** argv) {
 
-    JobExecution lastReceivedJob;
-    server.setup(argv);
-    std::cout << "Server on Standby." << std::endl;
+    //Escalonador escalonador;
+    //ExecucaoProcesso ultimoProcessoRecebido;
+    Escalonador.setup(argv);
+    std::cout << "Escalonador em espera." << std::endl;
+
     clock_t begin, end;
 
 
-    double timespent;
+    double tempogasto;
 
     while(true) {
         begin = clock();
-        server.rcvMessage();
-        if(server._jobsInExecution.size()>0){
-            server.round_robin();
+
+        escalonador.rcvMensagem();
+        if(escalonador._processosEmExecucao.size()>0){
+            escalonador.round_robin();
         }
+
         end = clock();
-        timespent = (double)(end - begin) / CLOCKS_PER_SEC;
-        server.updateNewJobsTime(timespent);
+
+        tempogasto = (double)(end - begin) / CLOCKS_PER_SEC;
+        escalonador.atualizaTempoNovosProcessos(tempogasto);
     }
     // TODO: capture "ctrl+c" from terminal and shut down whatever is needed.
     // What is needed: shut down shared memory segment and message queue.
 //    server.shutdown();
 //
-//    return SUCCESS;
+   //return SUCCESS;
 }
