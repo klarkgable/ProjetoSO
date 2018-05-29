@@ -69,18 +69,19 @@ void Executor::setup(char** argv) {
 	}
 
 	/// descobrir qual operação iremos fazer
-	std::string funcionalidadeExecucao = funcionalidade.substr(funcionalidade.tamanho() - strlen("solicita_execucao"));
-	std::string funcionalidadeRemover = funcionalidade.substr(functionalidade.tamanho() - strlen("remove_postergado"));
-	std::string funcionalidadeListaProcesso = funcionalidade.substr(funcionalidade.tamanho() - strlen("lista_postergados"));
-	std::string funcionalidadeShutdown = funcionalidade.substr(funcionalidade.tamanho() - strlen("Shutdown_postergado"));
+	std::string funcionalidadeExecucao = funcionalidade.substr(funcionalidade.length() - strlen("solicita_execucao"));
+	std::string funcionalidadeRemover = funcionalidade.substr(funcionalidade.length() - strlen("remove_postergado"));
+	std::string funcionalidadeListaProcesso = funcionalidade.substr(funcionalidade.length() - strlen("lista_postergados"));
+	std::string funcionalidadeShutdown = funcionalidade.substr(funcionalidade.length() - strlen("Shutdown_postergado"));
 
 	if(!funcionalidadeExecucao.compare("executa_postergado")) {
 		short horas, minutos;
 		int pri;
+		pri = 1;
 
 		this->analisaTempo(argv[1], &horas, &minutos);
 
-		this->executor(horas, minutos, atoi(argv[2]), argv[3],pri);
+		this->executor(horas, minutos, atoi(argv[2]), argv[3], pri);
 	}
 	else if(!funcionalidadeRemover.compare("remove_postergado")) {
 		this->naoExecuta(atoi(argv[1]));
@@ -98,7 +99,7 @@ void Executor::setup(char** argv) {
 }
 
 ///funcionalidade de solicitar execucao
-void Executor::executor(short horas = 0, short minutos = 0, int copias = 1, std::string path = "", int pri) {
+void Executor::executor(short horas = 0, short minutos = 0, int copias = 1, std::string path = "", int pri = 1) {
     MsgProcesso processoCorrente;
 
     this->_processoId[0]++;
@@ -106,7 +107,8 @@ void Executor::executor(short horas = 0, short minutos = 0, int copias = 1, std:
 	std::string mensagem = std::to_string(this->_processoId[0]) + "|" +
 						  std::to_string(horas) + "|" +
 						  std::to_string(minutos) + "|" +
-						  std::to_string(copias) + "|" + path + pri;
+						  std::to_string(copias) + "|" + path +
+						  std::to_string(pri);
 
     processoCorrente._mtipo = 1;
 	strcpy(processoCorrente._processo , mensagem.c_str());
@@ -131,7 +133,7 @@ void Executor::naoExecuta(int id) {
 }
 
 ///funcionalidade de listar processos
-void Executor::listaProcesso() {
+void Executor::listaProcessos() {
 	MsgProcesso controlaMensagem;
 
 	controlaMensagem._mtipo = 1;
@@ -149,6 +151,7 @@ void Executor::listaProcesso() {
 		while(i > 1) {
 			/// Recebe mensagem
 			size_t msgtamanho;
+			msgtamanho = 10;
 			MsgProcesso no;
 			msgrcv(this->_msqId2, &no, msgtamanho, MSG_TYPE, 0);
 			std::vector<std::string> vetorTupla = this->splitString(no._processo, "|");
@@ -166,7 +169,7 @@ void Executor::listaProcesso() {
 void Executor::shutdownEscalonador() {
 	MsgProcesso controlaMensagem;
 
-	controlaMenssagem._mtipo = 1;
+	controlaMensagem._mtipo = 1;
 
 	std::string mensagem = std::to_string(0) + "|" +
 						  MSG_SHUTDOWN;
@@ -197,7 +200,7 @@ void Executor::analisaTempo(char *stringTempo, short *horas, short *minutos) {
 	///ignora o que vem depois
 }
 
-void Executor::enviaMensagem(MsGProcesso mensagem) {
+void Executor::enviaMensagem(MsgProcesso mensagem) {
 
 	if(msgsnd(this->_msqId, &mensagem, sizeof(MsgProcesso), MSQ_FLAGS | IPC_NOWAIT) == -1) {
 		std::cout << "Erro: msgsnd falhou." << std::endl;

@@ -1,3 +1,6 @@
+#include <cstring>
+#include <string>
+
 #ifndef ESTRUTURA_H_INCLUDED
 #define ESTRUTURA_H_INCLUDED
 
@@ -10,12 +13,12 @@
 
 /// IPCs
 #define SHM_FLAGS 0644 /// flag de memoria
-#define SHM_KEY 0x111141 /// chave de memoria
+#define SHM_KEY 0x015421 /// chave de memoria
 #define MSQ_FLAGS 0644 /// Flag de mensagem
-#define MSQ_KEY 0x159560 /// chave de mensagem
-#define MSQ_KEY2 0x159561
+#define MSQ_KEY 0x052659 /// chave de mensagem
+#define MSQ_KEY2 0x052660
 #define MSG_TYPE 1
-#define SHM_KEY2 0x111142
+#define SHM_KEY2 0x015422
 
 /// Mensagens
 #define MSG_CANCEL "Cancel" /// Mensagem para cancelar um processo

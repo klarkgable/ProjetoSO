@@ -34,7 +34,7 @@ pid_t ExecucaoProcesso::getPID(){
 }
 
 void ExecucaoProcesso::setRecebeTempo() {
-    tempo( &(this->recebeTempo) );
+    time( &(this->recebeTempo) );
 }
 
 time_t ExecucaoProcesso::getRecebeTempo(){
@@ -156,11 +156,12 @@ void Escalonador::shutdown() {
 
 void Escalonador::rcvMensagem() {
 	size_t msgtamanho;
+	msgtamanho = 10;
 	msgProcesso msgp;
     ExecucaoProcesso processoNull;
 
 
-	int resultado= msgrcv(this->_msqId, &msgp, msgtamanho, MSG_TYPE, IPC_NOWAIT);
+	int resultado = msgrcv(this->_msqId, &msgp, msgtamanho, MSG_TYPE, IPC_NOWAIT);
 
     if(resultado != (ssize_t)-1) {
         ExecucaoProcesso rcvProcesso;
@@ -170,7 +171,7 @@ void Escalonador::rcvMensagem() {
         if (processoValores.size() >= 5) {
             rcvProcesso.setProcesso(analisaVetorProcesso(processoValores));
             rcvProcesso.resetTempoProximaExecucao();
-            rcvProcessso.copiasRestantes = rcvProcesso.getProcesso()._copias;
+            rcvProcesso.copiasRestantes = rcvProcesso.getProcesso()._copias;
             this->_processoId[0] = (rcvProcesso.getProcessoID())+1;
             _novosProcessos.insert(_novosProcessos.end(), rcvProcesso);
             std::cout << "Processo recebido:" + var << endl;
@@ -191,7 +192,7 @@ void Escalonador::rcvMensagem() {
             std::list<ExecucaoProcesso>::iterator it = _novosProcessos.begin();
             while(it!= _novosProcessos.end()){
                 std::string mensagemParaEnvio = std::to_string(it->getProcesso()._processoId)+"|"+
-                        std::to_string(it->getProcesso()._horas)+"|"+std::to_string(it->getProcesso()._minutos)+"|"+
+                        std::to_string(it->getProcesso()._hora)+"|"+std::to_string(it->getProcesso()._minutos)+"|"+
                         std::to_string(it->copiasRestantes)+"|"+it->getProcesso()._nomePrograma;
 
                 MsgProcesso msg;
@@ -211,7 +212,7 @@ void Escalonador::rcvMensagem() {
         ///sinais usados pelo escalonador
 
 void Escalonador::executa_processo(pid_t processoPID) {
-    kill(proceesoPID,SIGCONT);
+    kill(processoPID,SIGCONT);
 }
 
 void Escalonador::pausa_processo(pid_t processoPID) {
@@ -309,7 +310,7 @@ processo Escalonador::analisaVetorProcesso(vector<string> mensagem){
 
     processo processo;
     processo._processoId = std::stoi(std::string(mensagem.operator[](0).c_str()), nullptr,10);
-    processo._horas = std::stoi(std::string(mensagem.operator[](1).c_str()), nullptr,10);
+    processo._hora = std::stoi(std::string(mensagem.operator[](1).c_str()), nullptr,10);
     processo._minutos = std::stoi(std::string(mensagem.operator[](2).c_str()), nullptr,10);
     processo._copias = std::stoi(std::string(mensagem.operator[](3).c_str()), nullptr,10);
     processo._nomePrograma = std::string(mensagem.operator[](4).c_str());

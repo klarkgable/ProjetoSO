@@ -4,10 +4,10 @@
 #include <cstring>
 #include <ctime>
 #include <sys/types.h>
-//#include <sys/ipc.h>
+#include <sys/ipc.h>
 #include <sys/param.h>
-//#include <sys/msg.h>
-//#include <sys/shm.h>
+#include <sys/msg.h>
+#include <sys/shm.h>
 #include <list>
 #include <vector>
 #include "Estrutura.h"
@@ -25,9 +25,9 @@
 
 /// IPCs
 #define SHM_FLAGS 0644
-#define SHM_KEY 0x111141
+#define SHM_KEY 0x015421
 #define MSQ_FLAGS 0644
-#define MSQ_KEY 0x159560
+#define MSQ_KEY 0x052659
 #define MSG_TYPE 1
 
 /// Mensagens

@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
 
     //Escalonador escalonador;
     //ExecucaoProcesso ultimoProcessoRecebido;
-    Escalonador.setup(argv);
+    escalonador.setup(argv);
     std::cout << "Escalonador em espera." << std::endl;
 
     clock_t begin, end;

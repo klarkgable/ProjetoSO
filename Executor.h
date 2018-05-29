@@ -5,10 +5,10 @@
 #include <string>
 #include <vector>
 #include <sys/types.h>
-//#include <sys/ipc.h>
+#include <sys/ipc.h>
 #include <sys/param.h>
-//#include <sys/msg.h>
-//#include <sys/shm.h>
+#include <sys/msg.h>
+#include <sys/shm.h>
 #include "Estrutura.h"
 
 
@@ -51,7 +51,7 @@ class Executor {
 
 
             ///funçao de solicitar execuçao
-        	void executor(short horas, short minutos, int copias, std::string nomePorgrama,int pri);
+        	void executor(short horas, short minutos, int copias, std::string nomePorgrama, int pri);
 
         	void naoExecuta(int id);
 
