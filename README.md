@@ -24,7 +24,7 @@ Nosso projeto foi organizado em módulos, e basicamente temos dois módulos prin
 
 Além desses módulos, temos o arquivo Estrutura.h que vem definindo macros gerais para o projeto, e definindo a struct para processo e mensagem de processo. 
 
-E por último o modulo main.cpp que relaciona todos os outros módulos e realiza a execuçaõ do projeto em si com as chamadas dos métodos.
+Cada módulo principal tem sua main que relaciona os módulos necessários e realiza a execução do projeto em si com as chamadas dos métodos.
 
 
 
