@@ -31,5 +31,13 @@ Cada módulo principal tem sua main que relaciona os módulos necessários e rea
 Para executaqr o projeto, basta colocar todos os arquivos em uma pasta e compilar e chamar execução. Em shell, fazer as chamadas ao programa( solicita_execucao, remove_postergado, lista_postergados e Shutdown_postergado). O Escalonador estará rodando em background.
 
 
+Mecanismos de IPC utilizados:
+      
+      Fila de mensagens: para enviar nós de processo e trocar mensagens relevantes entre os processos.
+      
+      Memória compartilhada: apenas uma variável - processoId, que permite ao Executor atribuir um número exclusivo a um processo recém-criado.
+      
+      Sinais e Alarmes: para executar programas no tempo adequado.
+
 
 
