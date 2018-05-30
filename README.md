@@ -22,13 +22,16 @@ Nosso projeto foi organizado em módulos, e basicamente temos dois módulos prin
 
       Módulo Escalonador: Responsável por realizar em background o escalonamento de processos, seguindo a política round-roubin e fila de prioridades. O módulo Escalonador é composto pelo arquivo pricnipal Escalonador.cpp e o arquivo Escalonador.h que é o cabeçalho definindo macros, classes e métodos para o módulo escalonador. Essem módulo erencia o próprio processo de execução com a política Round Robin. Recebe entrada do módulo Executor, chama os programas nos momentos apropriados.
 
-Além desses módulos, temos o arquivo Estrutura.h que vem definindo macros gerais para o projeto, e definindo a struct para processo e mensagem de processo. 
+Temos o módulo auxiliar para execução dos processos, que  vem dividido nos arquivos Execucao_Processo.cpp e Execeucao_Processo.h
 
-Cada módulo principal tem sua main que relaciona os módulos necessários e realiza a execução do projeto em si com as chamadas dos métodos.
+Além desses módulos, temos o arquivo Estrutura.h que vem definindo macros gerais para o projeto, e definindo a struct para processo e mensagem de processo e por fim o arquivo main.cpp que é como se fosse a main do móculo escalonador, faz chamadas aos métodos do escalonador que aparece após a chamada de programa via shell pelo usuário.
 
 
 
-Para executaqr o projeto, basta colocar todos os arquivos em uma pasta e compilar e chamar execução. Em shell, fazer as chamadas ao programa( solicita_execucao, remove_postergado, lista_postergados e Shutdown_postergado). O Escalonador estará rodando em background.
+
+
+Para executar o projeto, basta colocar todos os arquivos em uma pasta e compilar e chamar execução. Em shell, fazer as chamadas ao programa( solicita_execucao, remove_postergado, lista_postergados e Shutdown_postergado). O Escalonador estará rodando em background.
+
 
 
 Mecanismos de IPC utilizados:
