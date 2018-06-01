@@ -13,6 +13,9 @@ using namespace std;
 ExecucaoProcesso::ExecucaoProcesso(){
 
 }
+ExecucaoProcesso::~ExecucaoProcesso(){
+
+}
 
 ///recebe processo
 void ExecucaoProcesso::setProcesso(processo rcvProcesso) {
@@ -52,7 +55,7 @@ bool ExecucaoProcesso::operator==(const ExecucaoProcesso &other) const {
 
 ///resetar tempo para proxima execucao
 void ExecucaoProcesso::resetTempoProximaExecucao() {
-    this->tempoProximaExecucao = this->getProcesso()._hora*3600 + this->getProcesso()._minutos*60; ///tempo estimado para procima execuÁao em segundos
+    this->tempoProximaExecucao = this->getProcesso()._hora*3600 + this->getProcesso()._minutos*60; ///tempo estimado para procima execu√ßao em segundos
 }
 
 ///decrementa tempo
