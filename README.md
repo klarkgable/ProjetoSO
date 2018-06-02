@@ -23,7 +23,7 @@ Nosso projeto foi organizado em módulos, e basicamente temos dois módulos prin
 
       Módulo Escalonador: Responsável por realizar em background o escalonamento de processos, seguindo a política round-roubin e fila de prioridades. O módulo Escalonador é composto pelo arquivo pricnipal Escalonador.cpp e o arquivo Escalonador.h que é o cabeçalho definindo macros, classes e métodos para o módulo escalonador. Essem módulo gerencia o próprio processo de execução com a política Round Robin. Recebe entrada do módulo Executor, chama os programas nos momentos apropriados.
 
-Temos o módulo auxiliar para execução dos processos, que  vem dividido nos arquivos Execucao_Processo.cpp e Execeucao_Processo.h e formas base para o módulo escalonador.
+Temos o módulo auxiliar para execução dos processos, que  vem dividido nos arquivos Execucao_Processo.cpp e Execeucao_Processo.h. Esses arquivos são base para o módulo escalonador.
 
 Além desses módulos, temos o arquivo Estrutura.h que vem definindo macros gerais para o projeto, e definindo a struct para processo e mensagem de processo e por fim o arquivo main.cpp que é como se fosse a main do móculo escalonador, faz chamadas aos métodos do escalonador que aparece após a chamada de programa via shell pelo usuário.
 
