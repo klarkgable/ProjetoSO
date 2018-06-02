@@ -31,6 +31,7 @@ Obs: No módulo executor ele conta com um método main também para chamar execu
 
 
 
+EXECUÇÃO DO PROJETO:
 
 Para rodar o projeto, criamos um arquivo makefile com as diretrizes de compilação. Então basta baixar arquivos do projeto para uma pasta, abrir terminal e caminhar até a pasta do projeto(comando cd) e rodar o make(para isso, seu sistema tem que ta instalado os compiladores, o g++ e o make). Estando na pasta do projeto, digite no terminal o comando "make -f makefile.txt" que ele ira gerar os .o e executáveis para rodar o projeto. Após criar os "arquivos .o" e executáveis(Escalonador, Solicita_execucao, remove_postergado, lista_postergados e Shutdown_postergado) já é possível começar a execução em dois passos:
 
