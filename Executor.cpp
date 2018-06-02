@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
 			executor.setup(argv);
 			break;
 		default:
-			std::cout << "Numero de argumentos incompatÌvel, conferir chamada do programa" << std::endl;
+			std::cout << "Numero de argumentos incompat√≠vel, conferir chamada do programa" << std::endl;
 			return ERROR_ARGS;
 	}
 
@@ -41,7 +41,7 @@ void Executor::setup(char** argv) {
 	std::string funcionalidade = argv[0];
 
 
-	if((this->_shmId = shmget(SHM_KEY, 0, 0)) == -1) { ///criaÁ„o
+	if((this->_shmId = shmget(SHM_KEY, 0, 0)) == -1) { ///cria√ß√£o
 		std::cout << "Erro: shmget falhou." << std::endl;
 		exit(1);
 	}
@@ -53,7 +53,7 @@ void Executor::setup(char** argv) {
 	}
 
 	///Tamanho da Lista
-	if((this->_shmId2 = shmget(SHM_KEY2, 0, 0)) == -1) { /// CriaÁao
+	if((this->_shmId2 = shmget(SHM_KEY2, 0, 0)) == -1) { /// Cria√ßao
 		std::cout << "Erro: shmget falhou." << std::endl;
 		exit(1);
 	}
@@ -76,13 +76,13 @@ void Executor::setup(char** argv) {
 		exit(2);
 	}
 
-	/// descobrir qual operaÁ„o iremos fazer
+	/// descobrir qual opera√ß√£o iremos fazer
 	std::string funcionalidadeExecucao = funcionalidade.substr(funcionalidade.length() - strlen("solicita_execucao"));
 	std::string funcionalidadeRemover = funcionalidade.substr(funcionalidade.length() - strlen("remove_postergado"));
 	std::string funcionalidadeListaProcesso = funcionalidade.substr(funcionalidade.length() - strlen("lista_postergados"));
 	std::string funcionalidadeShutdown = funcionalidade.substr(funcionalidade.length() - strlen("Shutdown_postergado"));
 
-	if(!funcionalidadeExecucao.compare("executa_postergado")) {
+	if(!funcionalidadeExecucao.compare("solicita_execucao")) {
 		short horas, minutos;
 		int pri;
 		pri = 1;
@@ -170,7 +170,7 @@ void Executor::listaProcessos() {
 		}
 	}
 	else {
-		std::cout << "N„o h· processos em execucao." << std::endl;
+		std::cout << "N√£o h√° processos em execucao." << std::endl;
 	}
 }
 
