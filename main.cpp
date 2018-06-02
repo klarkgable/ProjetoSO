@@ -10,6 +10,7 @@
 
 using namespace std;
 
+/*
 ExecucaoProcesso::ExecucaoProcesso(){
 
 }
@@ -40,7 +41,7 @@ void Escalonador::round_robin() {
 void Escalonador::atualizaTempoNovosProcessos(double tempoGasto) {
 
 }
-
+*/
 
 
 Escalonador escalonador;
