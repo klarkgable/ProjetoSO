@@ -25,7 +25,7 @@ Nosso projeto foi organizado em módulos, e basicamente temos dois módulos prin
 
 Temos o módulo auxiliar para execução dos processos, que  vem dividido nos arquivos Execucao_Processo.cpp e Execeucao_Processo.h. Esses arquivos são base para o módulo escalonador.
 
-Além desses módulos, temos o arquivo Estrutura.h que vem definindo macros gerais para o projeto, e definindo a struct para processo e mensagem de processo e por fim o arquivo main.cpp que é como se fosse a main do móculo escalonador, faz chamadas aos métodos do escalonador que aparece após a chamada de programa via shell pelo usuário.
+Além desses módulos, temos o arquivo Estrutura.h que vem definindo macros gerais para o projeto, e definindo a struct para processo e mensagem de processo e por fim o arquivo main.cpp que é como se fosse a main do móculo escalonador, faz chamadas aos métodos do escalonador que roda em espera(background).
 
 Obs: No módulo executor ele conta com um método main também para chamar execução do executor.
 
