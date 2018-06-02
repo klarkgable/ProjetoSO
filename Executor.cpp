@@ -23,7 +23,9 @@ int main(int argc, char** argv) {
 	switch(argc) {
 		case 1:
 		case 2:
-		case 4:
+        	case 3:
+        	case 4:
+		case 5:      ///5 argumentos(hora, minutos,copias,nome do arquivo e prioridade)
 			executor.setup(argv);
 			break;
 		default:
