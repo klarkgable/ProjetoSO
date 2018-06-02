@@ -4,10 +4,10 @@
 #include <cstring>
 #include <ctime>
 #include <sys/types.h>
-//#include <sys/ipc.h>
+#include <sys/ipc.h>
 #include <sys/param.h>
-//#include <sys/msg.h>
-//#include <sys/shm.h>
+#include <sys/msg.h>
+#include <sys/shm.h>
 #include <list>
 #include <vector>
 #include "Estrutura.h"
@@ -122,7 +122,7 @@ class Escalonador {
             ///analisa vetor de mensagem de processo e retorna uma struct do processo
             processo analisaVetorProcesso(std::vector<std::string> mensagem);
 
-            ///continua execuÁao de processo com pid dele
+            ///continua execu√ßao de processo com pid dele
             void executa_processo(pid_t processoPID);
 
             ///pausa execucao de processo com pid
@@ -137,7 +137,7 @@ class Escalonador {
             ///inicia novo processo e retorna pid dele
             pid_t inicia_processo(ExecucaoProcesso processo);
 
-           ///verifica se o processo que vai se executar est· ativo ou morto e retorna true ou false
+           ///verifica se o processo que vai se executar est√° ativo ou morto e retorna true ou false
             bool verificaProcessos();
 
             ///atualiza tempo para execucao dos processos
