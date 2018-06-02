@@ -1,0 +1,38 @@
+OBJSEXECUTOR = Executor.o
+OBJSESCALONADOR = main.o Escalonador.o Execucao_Processo.o
+CC = g++
+DEBUG = -g
+CFLAGS =  -std=c++11 -Wall -c $(DEBUG)
+LFLAGS = -Wall $(DEBUG)
+
+all: solicita_execucao remove_postergado lista_postergados Shutdown_postergado Escalonador
+
+solicita_execucao: $(OBJSEXECUTOR)
+	$(CC) $(LFLAGS) $(OBJSEXECUTOR) -o solicita_execucao
+
+remove_postergado:  $(OBJSEXECUTOR)
+	$(CC) $(LFLAGS) $(OBJSEXECUTOR) -o remove_postergado
+
+lista_postergados:  $(OBJSEXECUTOR)
+	$(CC) $(LFLAGS) $(OBJSEXECUTOR) -o lista_postergados
+
+Shutdown_postergado:  $(OBJSEXECUTOR)
+	$(CC) $(LFLAGS) $(OBJSEXECUTOR) -o Shutdown_postergado
+
+Escalonador: $(OBJSESCALONADOR)
+	$(CC) $(LFLAGS) $(OBJSESCALONADOR) -o Escalonador
+
+Executor.o: Executor.cpp Executor.h Estrutura.h
+	$(CC) $(CFLAGS) Executor.cpp
+
+main.o: main.cpp Execucao_Processo.h Escalonador.h
+	$(CC) $(CFLAGS) main.cpp
+
+Escalonador.o: Escalonador.cpp Escalonador.h
+	$(CC) $(CFLAGS) Escalonador.cpp
+
+Execucao_Processo.o: Execucao_Processo.cpp Execucao_Processo.h
+	$(CC) $(CFLAGS) Execucao_Processo.cpp
+
+clean:
+	\rm *.o
