@@ -32,7 +32,7 @@ Obs: No módulo executor ele conta com um método main também para chamar execu
 
 
 
-Para rodar o projeto, criamos um arquivo makefile com as diretrizes de compilação então basta abrir terminal e rodar o make e utilizar em shell os comandos de teste, mas cabe a quem for compilar a opção de compilar diretamente com os arquivos em uma pasta, mas seguindo os passos abaixo para funcionar:
+Para rodar o projeto, criamos um arquivo makefile com as diretrizes de compilação. Então basta baixar arquivos do projeto para uma pasta, abrir terminal e caminhar até a pasta do projeto(comando cd) e rodar o make(para isso, seu sistema tem que ta instalado os compiladores, o g++ e o make). Estando na pasta do projeto, digite no terminal o comando "make -f makefile.txt" que ele ira gerar os .o e executáveis para rodar o projeto. Mas cabe a quem for compilar a opção de compilar diretamente com os arquivos em uma pasta, mas seguindo os passos abaixo para funcionar:
 
       Basta colocar todos os arquivos em uma pasta e compilar e chamar execução. Nesse caso irá rodar o arquivo main.cpp que equivale ao escalonador que irá ficar em espera em background. Após isso, compilar em nova pasta contendo os arquivos Executor.cpp, Executor.h e Estrutura.h pra rodar o excecutor enquanto escalonador trabalha em background. fazer as chamadas ao programa( solicita_execucao, remove_postergado, lista_postergados e Shutdown_postergado).
 
