@@ -5,10 +5,10 @@
 #include <string>
 #include <vector>
 #include <sys/types.h>
-//#include <sys/ipc.h>
+#include <sys/ipc.h>
 #include <sys/param.h>
-//#include <sys/msg.h>
-//#include <sys/shm.h>
+#include <sys/msg.h>
+#include <sys/shm.h>
 #include "Estrutura.h"
 #include "Execucao_Processo.h"
 
@@ -54,12 +54,12 @@ class Executor {
         	void setup(char** argv);
 
 
-                ///funçoes de solicitar execuçao
+                ///funÃ§oes de solicitar execuÃ§ao
         	void executor(short horas, short minutos, int copias, std::string nomePorgrama, int pri);
 
         	void naoExecuta(int id);
 
-            ///funçao opcionais para listar processos e dar shutdown
+            ///funÃ§ao opcionais para listar processos e dar shutdown
                 void listaProcessos();
 
                 void shutdownEscalonador();
