@@ -43,47 +43,6 @@
 #ifndef ESCALONADOR_H_INCLUDED
 #define ESCALONADOR_H_INCLUDED
 
-/*class ExecucaoProcesso {
-
-    private:
-
-        pid_t _pid = -1;
-        time_t recebeTempo;
-        double tempoProximaExecucao;
-
-
-    public:
-        int copiasRestantes = _processo._copias;
-
-        processo _processo;
-
-        void setRecebeTempo();
-
-        time_t getRecebeTempo();
-
-        void setProcesso(processo rcvProcesso);
-
-        Processo getProcesso();
-
-        int getProcessoID();
-
-        void setPID(pid_t pid);
-
-        pid_t getPID();
-
-        ExecucaoProcesso();
-
-        void resetTempoProximaExecucao();
-
-        void decreaseTempoProximaExecucao(double dTempo);
-
-        double getTempoProximaExecucao();
-
-        bool operator==(const ExecucaoProcesso &other) const;
-};
-
-*/
-
  ///Classe do escalonador
 class Escalonador {
 	private:
