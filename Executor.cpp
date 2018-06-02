@@ -99,7 +99,7 @@ void Executor::setup(char** argv) {
 	else if(!funcionalidadeListaProcesso.compare("lista_postergados")) {
 		this->listaProcessos();
 	}
-	else if(!funcionalidadeShutdown.compare("shutdown_postergado")) {
+	else if(!funcionalidadeShutdown.compare("Shutdown_postergado")) {
 		this->shutdownEscalonador();
 	}
 	else {
