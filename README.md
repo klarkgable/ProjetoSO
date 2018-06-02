@@ -15,7 +15,7 @@ Alunos:
       
       Fábio Oliveira Guimarães mat: 180052659
       
-Projeto implementando em linguagem C++ e compilado pelo compilador Gcc e testado em dois sistemas operacionais: Windows(problemas com diferenças de inlcude de algumas bibliotecas que só aceitam em sistemas unix) e Linux. 
+Projeto implementando em linguagem C++ e compilado pelo compilador Gcc e testado em dois sistemas operacionais:No UNIX(ambientes linux) que é o foco da disciplina e Windows(problemas com diferenças de inlcude de algumas bibliotecas que só aceitam em sistemas unix, mas consegue rodar também apesar de usar algumas funções de unix). 
 
 Nosso projeto foi organizado em módulos, e basicamente temos dois módulos principais:
 
@@ -32,9 +32,20 @@ Obs: No módulo executor ele conta com um método main também para chamar execu
 
 
 
-Para rodar o projeto, criamos um arquivo makefile com as diretrizes de compilação. Então basta baixar arquivos do projeto para uma pasta, abrir terminal e caminhar até a pasta do projeto(comando cd) e rodar o make(para isso, seu sistema tem que ta instalado os compiladores, o g++ e o make). Estando na pasta do projeto, digite no terminal o comando "make -f makefile.txt" que ele ira gerar os .o e executáveis para rodar o projeto. Mas cabe a quem for compilar a opção de compilar diretamente com os arquivos em uma pasta, mas seguindo os passos abaixo para funcionar:
+Para rodar o projeto, criamos um arquivo makefile com as diretrizes de compilação. Então basta baixar arquivos do projeto para uma pasta, abrir terminal e caminhar até a pasta do projeto(comando cd) e rodar o make(para isso, seu sistema tem que ta instalado os compiladores, o g++ e o make). Estando na pasta do projeto, digite no terminal o comando "make -f makefile.txt" que ele ira gerar os .o e executáveis para rodar o projeto. Após criar os "arquivos .o" e executáveis(Escalonador, Solicita_execucao, remove_postergado, lista_postergados e Shutdown_postergado) já é possível começar a execução em dois passos:
 
-      Basta colocar todos os arquivos em uma pasta e compilar e chamar execução. Nesse caso irá rodar o arquivo main.cpp que equivale ao escalonador que irá ficar em espera em background. Após isso, compilar em nova pasta contendo os arquivos Executor.cpp, Executor.h e Estrutura.h pra rodar o excecutor enquanto escalonador trabalha em background. fazer as chamadas ao programa( solicita_execucao, remove_postergado, lista_postergados e Shutdown_postergado).
+      1) Em terminal digite ./Escalonador para rodar o escalonador. Aparecerá a mensagem "Escalonador em espera". Então abra novo terminal e caminhe novamente para a pasta do projeto. Obs:Caso tenha terminado de usar o escalonador, pode-se apertar ctrl+c no terminal para poder digitar qualquer comando ou entrar em outra pasta.
+      
+      2) No novo terminal digite a funcionalidade pretendida(Solicita_execucao[parâmetros], remove_postergado, lista_postergados ou Shutdown_postergado) com o comando ./funcionalidade
+            exemplo: ./solicita_execucao[parametros]
+                     ./lista_postergados
+                     ...
+          
+                     
+
+ Caso optar por compilar sem o arquivo makefile, terá que ir compilando separadamente os arquivos, pois todos compoem o projeto, mas Executor e Escalonador cada um tem seus arquivos .cpp e .h de base.
+ 
+ 
 
 
 
